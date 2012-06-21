@@ -28,7 +28,6 @@ minetest.register_craft({
 
 
 minetest.register_node("teleporter:teleporter_pad", {
-	--tile_images = {"teleporter_teleporter_pad.png","default_steel_block.png", "default_steel_block.png", "default_steel_block.png","default_steel_block.png","default_steel_block.png"},
 	tile_images = {"teleporter_teleporter_pad.png"},
 	drawtype = "signlike",
 	paramtype = "light",
@@ -40,12 +39,8 @@ minetest.register_node("teleporter:teleporter_pad", {
 	groups = {choppy=2,dig_immediate=2},
 	selection_box = {
 		type = "wallmounted",
-		--wall_top = <default>
-		--wall_bottom = <default>
-		--wall_side = <default>
 	},
         on_construct = function(pos)
-                --local n = minetest.env:get_node(pos)
                 local meta = minetest.env:get_meta(pos)
                 meta:set_string("formspec", "hack:sign_text_input")
                 meta:set_string("infotext", "\"Teleport to Spawn\"")
@@ -60,7 +55,6 @@ minetest.register_node("teleporter:teleporter_pad", {
 		meta:set_string("owner", placer:get_player_name())
 	end,
         on_receive_fields = function(pos, formname, fields, sender)
-                --print("Sign at "..minetest.pos_to_string(pos).." got "..dump(fields))
 		local coords = teleporter_coordinates(fields.text)
                 local meta = minetest.env:get_meta(pos)
 
@@ -84,8 +78,8 @@ minetest.register_node("teleporter:teleporter_pad", {
 			infotext="Teleporter Offline"
 		end
 
-                print((sender:get_player_name() or "").." wrote \""..fields.text..
-                                "\" to sign at "..minetest.pos_to_string(pos))
+                print((sender:get_player_name() or "").." entered \""..fields.text..
+                                "\" to teleporter at "..minetest.pos_to_string(pos))
                 meta:set_string("text", fields.text)
                 meta:set_string("infotext", '"'..infotext..'"')
         end,
