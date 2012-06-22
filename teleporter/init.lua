@@ -1,5 +1,5 @@
 ---
---Teleporter 1.01
+--Teleporter 1.02
 --Copyright (C) 2012 Bad_Command
 --
 --This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,9 @@ minetest.register_node("teleporter:teleporter_pad", {
 	paramtype2 = "wallmounted",
 	walkable = false,
 	description="Teleporter Pad",
+	inventory_image = "teleporter_teleporter_pad.png",
 	metadata_name = "sign",
-	sounds = default.node_sound_defaults(),
+	--sounds = default.node_sound_defaults(),
 	groups = {choppy=2,dig_immediate=2},
 	selection_box = {
 		type = "wallmounted",
