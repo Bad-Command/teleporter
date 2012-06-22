@@ -145,15 +145,17 @@ function is_teleport_paired(coords)
 end
 
 function teleporter_coordinates(str) 
-	local x,y,z,desc = string.match(str, "(-?%d*),(-?%d*),(-?%d*),?(.*)")
+	local x,y,z,desc = string.match(str, "^(-?%d+),(-?%d+),(-?%d+),?(.*)$")
 	
 	if desc=="" then
 		desc = nil
 	end
 
-	if x==nil or y==nil or z==nil then
-		return nil
+	if x==nil or y==nil or z==nil or 
+		string.len(x) > 5 or string.len(y) > 5 or string.len(z) > 5 then
+			return nil
 	end
+
 	x = x + 0.0
 	y = y + 0.0
 	z = z + 0.0
