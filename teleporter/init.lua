@@ -71,7 +71,6 @@ minetest.register_node("teleporter:teleporter_pad", {
 
 	end,
         on_receive_fields = function(pos, formname, fields, sender)
-		local coords = teleporter_coordinates(fields.text)
                 local meta = minetest.env:get_meta(pos)
 		local name = sender:get_player_name()
 		local privs = minetest.get_player_privs(name)
@@ -87,6 +86,13 @@ minetest.register_node("teleporter:teleporter_pad", {
 			minetest.chat_send_player(name, 'Teleporter:  You need teleport privileges to configure a teleporter')
 			return
 		end
+
+		local status,coords = pcall(function () 
+                      return teleporter_coordinates(fields.text) 
+                end)
+                if status == false then
+                   print("Bad coordinate format: " .. fields.text .. ": " .. coords)
+                end
 
 		local infotext = ""
 		if coords~=nil then	
@@ -153,9 +159,10 @@ function teleporter_coordinates(str)
 	if x==nil or y==nil or z==nil then
 		return nil
 	end
+        -- these raise an exception when x/y/z are not number parsable
 	x = x + 0.0
 	y = y + 0.0
-	z = z + 0.0
+	z = z + 0.0 
 
 	if x > 32765 or x < -32765 or y > 32765 or y < -32765 or z > 32765 or z < -32765 then
 		return nil
@@ -163,7 +170,6 @@ function teleporter_coordinates(str)
 
 	return {x=x, y=y, z=z, desc=desc}
 end
-
 
 minetest.register_abm(
 	{nodenames = {"teleporter:teleporter_pad"},
