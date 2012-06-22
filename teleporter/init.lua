@@ -1,5 +1,5 @@
 ---
---Teleporter 1.02
+--Teleporter 1.03
 --Copyright (C) 2012 Bad_Command
 --
 --This program is free software; you can redistribute it and/or modify
