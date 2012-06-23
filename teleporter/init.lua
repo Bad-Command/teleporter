@@ -1,5 +1,5 @@
 ---
---Teleporter 1.03
+--Teleporter 1.04
 --Copyright (C) 2012 Bad_Command
 --
 --This program is free software; you can redistribute it and/or modify
@@ -152,7 +152,7 @@ function teleporter_coordinates(str)
 	end
 
 	if x==nil or y==nil or z==nil or 
-		string.len(x) > 5 or string.len(y) > 5 or string.len(z) > 5 then
+		string.len(x) > 6 or string.len(y) > 6 or string.len(z) > 6 then
 			return nil
 	end
 
