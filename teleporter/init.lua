@@ -1,5 +1,5 @@
 ---
---Teleporter 1.04
+--Teleporter 1.05
 --Copyright (C) 2012 Bad_Command
 --
 --This program is free software; you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 ----
 
 -- Teleporter mod configuration options
-teleport_perms_to_build = true
-teleport_perms_to_configure = true
+teleport_perms_to_build = false
+teleport_perms_to_configure = false
 teleport_requires_pairing = true
 teleport_default_coordinates = {x=0, y=0, z=0, desc="Spawn"}
 teleport_pairing_check_radius = 2
@@ -33,14 +33,23 @@ minetest.register_craft({
         }
 })
 
+minetest.register_craft({
+	output = 'teleporter:teleporter_pad',
+	recipe = {
+                {'default:wood', 'default:glass', 'default:wood'},
+                {'default:wood', 'default:mese', 'default:wood'},
+                {'default:wood', 'default:wood', 'default:wood'},
+        }
+})
+
 minetest.register_node("teleporter:teleporter_pad", {
-	tile_images = {"teleporter_teleporter_pad.png"},
+	tile_images = {"teleporter_teleporter_pad_16.png"},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	walkable = false,
 	description="Teleporter Pad",
-	inventory_image = "teleporter_teleporter_pad.png",
+	inventory_image = "teleporter_teleporter_pad_16.png",
 	metadata_name = "sign",
 	--sounds = default.node_sound_defaults(),
 	groups = {choppy=2,dig_immediate=2},
