@@ -1,11 +1,11 @@
 ---
---Teleporter 1.05
+--Teleporter 1.06
 --Copyright (C) 2012 Bad_Command
 --
---This program is free software; you can redistribute it and/or modify
---it under the terms of the GNU General Public License as published by
---the Free Software Foundation; either version 2 of the License, or
---(at your option) any later version.
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 2.1 of the License, or (at your option) any later version.
 --
 --This program is distributed in the hope that it will be useful,
 --but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,9 @@ teleport_perms_to_configure = false
 teleport_requires_pairing = true
 teleport_default_coordinates = {x=0, y=0, z=0, desc="Spawn"}
 teleport_pairing_check_radius = 2
+teleport_tile_image = "teleporter_teleporter_pad_16.png"
+-- Higer resolution pads:
+--teleport_tile_image = "teleporter_teleporter_pad.png"
 
 minetest.register_craft({
 	output = 'teleporter:teleporter_pad',
@@ -43,13 +46,13 @@ minetest.register_craft({
 })
 
 minetest.register_node("teleporter:teleporter_pad", {
-	tile_images = {"teleporter_teleporter_pad_16.png"},
+	tile_images = {teleport_tile_image},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	walkable = false,
 	description="Teleporter Pad",
-	inventory_image = "teleporter_teleporter_pad_16.png",
+	inventory_image = teleport_tile_image,
 	metadata_name = "sign",
 	--sounds = default.node_sound_defaults(),
 	groups = {choppy=2,dig_immediate=2},
