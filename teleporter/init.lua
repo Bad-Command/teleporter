@@ -1,5 +1,5 @@
 ---
---Teleporter 1.06
+--Teleporter 1.07
 --Copyright (C) 2012 Bad_Command
 --
 --This library is free software; you can redistribute it and/or
@@ -17,15 +17,11 @@
 --Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ----
 
--- Teleporter mod configuration options
-teleport_perms_to_build = false
-teleport_perms_to_configure = false
-teleport_requires_pairing = true
-teleport_default_coordinates = {x=0, y=0, z=0, desc="Spawn"}
-teleport_pairing_check_radius = 2
-teleport_tile_image = "teleporter_teleporter_pad_16.png"
--- Higer resolution pads:
---teleport_tile_image = "teleporter_teleporter_pad.png"
+teleporter = {}
+teleporter.version = 1.07
+
+-- config.lua contains configuration parameters
+dofile(minetest.get_modpath("teleporter").."/config.lua")
 
 minetest.register_craft({
 	output = 'teleporter:teleporter_pad',
@@ -46,13 +42,13 @@ minetest.register_craft({
 })
 
 minetest.register_node("teleporter:teleporter_pad", {
-	tile_images = {teleport_tile_image},
+	tile_images = {teleporter.tile_image},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	walkable = false,
 	description="Teleporter Pad",
-	inventory_image = teleport_tile_image,
+	inventory_image = teleporter.tile_image,
 	metadata_name = "sign",
 	--sounds = default.node_sound_defaults(),
 	groups = {choppy=2,dig_immediate=2},
@@ -62,19 +58,22 @@ minetest.register_node("teleporter:teleporter_pad", {
         on_construct = function(pos)
                 local meta = minetest.env:get_meta(pos)
                 meta:set_string("formspec", "hack:sign_text_input")
-                meta:set_string("infotext", "\"Teleport to "..teleport_default_coordinates.desc.."\"")
-		meta:set_string("text", teleport_default_coordinates.x..","..teleport_default_coordinates.y..","..teleport_default_coordinates.z..","..teleport_default_coordinates.desc)
+                meta:set_string("infotext", "\"Teleport to "..teleporter.default_coordinates.desc.."\"")
+		meta:set_string("text", teleporter.default_coordinates.x..","..
+			teleporter.default_coordinates.y..","..
+			teleporter.default_coordinates.z..","..
+			teleporter.default_coordinates.desc)
 		meta:set_float("enabled", -1)
-		meta:set_float("x", teleport_default_coordinates.x)
-		meta:set_float("y", teleport_default_coordinates.y)
-		meta:set_float("z", teleport_default_coordinates.z)
+		meta:set_float("x", teleporter.default_coordinates.x)
+		meta:set_float("y", teleporter.default_coordinates.y)
+		meta:set_float("z", teleporter.default_coordinates.z)
         end,
 	after_place_node = function(pos, placer)
 		local meta = minetest.env:get_meta(pos)
 		local name = placer:get_player_name()
 		meta:set_string("owner", name)
 		
-		if teleport_perms_to_build and not minetest.get_player_privs(name)["teleport"] then
+		if teleporter.perms_to_build and not minetest.get_player_privs(name)["teleport"] then
 			minetest.chat_send_player(name, 'Teleporter:  Teleport privileges are required to build teleporters.')
 			minetest.env:remove_node(pos)
 			minetest.env:add_item(pos, 'teleporter:teleporter_pad')
@@ -84,7 +83,7 @@ minetest.register_node("teleporter:teleporter_pad", {
 
 	end,
         on_receive_fields = function(pos, formname, fields, sender)
-		local coords = teleporter_coordinates(fields.text)
+		local coords = teleporter.coordinates(fields.text)
                 local meta = minetest.env:get_meta(pos)
 		local name = sender:get_player_name()
 		local privs = minetest.get_player_privs(name)
@@ -96,7 +95,7 @@ minetest.register_node("teleporter:teleporter_pad", {
 			minetest.chat_send_player(name, 'Teleporter:  This teleporter belongs to '..meta:get_string("owner"))
 		end
 
-		if teleport_perms_to_configure and not privs["teleport"] then
+		if teleporter.perms_to_configure and not privs["teleport"] then
 			minetest.chat_send_player(name, 'Teleporter:  You need teleport privileges to configure a teleporter')
 			return
 		end
@@ -106,7 +105,7 @@ minetest.register_node("teleporter:teleporter_pad", {
 			meta:set_float("x", coords.x)
 			meta:set_float("y", coords.y)
 			meta:set_float("z", coords.z)
-			if teleport_requires_pairing and not is_teleport_paired(coords) and not privs["server"] then
+			if teleporter.requires_pairing and not teleporter.is_paired(coords) and not privs["server"] then
 				minetest.chat_send_player(name, 'Teleporter:  There is no recently-used teleporter pad at the destination!')
 		                meta:set_string("text", fields.text)
 				infotext="Teleporter is Disabled"
@@ -120,7 +119,7 @@ minetest.register_node("teleporter:teleporter_pad", {
 				end
 			end
 		else
-			minetest.chat_send_player(name, 'Teleporter:  Incorrect coordinates.  Enter them as \'X,Y,Z,Description\'')
+			minetest.chat_send_player(name, 'Teleporter:  Incorrect coordinates.  Enter them as \'X,Y,Z,Description\' without decimals.')
 			meta:set_float("enabled", -1)
 			infotext="Teleporter Offline"
 		end
@@ -142,10 +141,10 @@ minetest.register_node("teleporter:teleporter_pad", {
 	end
 })
 
-function is_teleport_paired(coords) 
-	for dx=-teleport_pairing_check_radius,teleport_pairing_check_radius do
-		for dy=-teleport_pairing_check_radius,teleport_pairing_check_radius do
-			for dz=-teleport_pairing_check_radius,teleport_pairing_check_radius do
+teleporter.is_paired = function(coords) 
+	for dx=-teleporter.pairing_check_radius,teleporter.pairing_check_radius do
+		for dy=-teleporter.pairing_check_radius,teleporter.pairing_check_radius do
+			for dz=-teleporter.pairing_check_radius,teleporter.pairing_check_radius do
 				local node = minetest.env:get_node({x=coords.x + dx, y=coords.y + dy, z=coords.z + dz})
 				if node.name == 'teleporter:teleporter_pad' then
 					return true
@@ -156,7 +155,7 @@ function is_teleport_paired(coords)
 	return false
 end
 
-function teleporter_coordinates(str) 
+teleporter.coordinates = function(str) 
 	local x,y,z,desc = string.match(str, "^(-?%d+),(-?%d+),(-?%d+),?(.*)$")
 	
 	if desc=="" then
